@@ -1,8 +1,8 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "korean-web-typography",
-  "version": "1.0.0",
-  "description": "Korean web typography rules: Pretendard font stack and sizing, no monospace, word-break keep-all, no justification, and the order of operations for line spacing.",
+  "version": "1.1.0",
+  "description": "Korean web typography rules: Pretendard font stack and sizing, no monospace, word-break keep-all, no justification, the order of operations for line spacing, and no dashes in Korean body text.",
   "author": {
     "name": "mockmock69401"
   },
