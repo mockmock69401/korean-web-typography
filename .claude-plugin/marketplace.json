@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "mockmock69401",
+  "description": "Claude Code plugins by mockmock69401",
+  "owner": {
+    "name": "mockmock69401"
+  },
+  "plugins": [
+    {
+      "name": "korean-web-typography",
+      "description": "Korean web typography rules: Pretendard font stack and sizing, no monospace, word-break keep-all, no justification, and the order of operations for line spacing.",
+      "source": "./",
+      "homepage": "https://github.com/mockmock69401/korean-web-typography"
+    }
+  ]
+}
