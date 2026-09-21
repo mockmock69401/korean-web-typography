@@ -1,6 +1,6 @@
 ---
 name: korean-web-typography
-description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - sets the font stack, forbids monospace, applies word-break keep-all, gives the order of operations for line spacing, and keeps dashes out of Korean body text. Applies to every web project, not one codebase.
+description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - sets the font stack, forbids monospace, applies word-break keep-all, gives the order of operations for line spacing, and keeps em and en dashes to a minimum in Korean body text. Applies to every web project, not one codebase.
 ---
 
 # Korean web typography
@@ -226,33 +226,28 @@ you actually serve, or accept the weight in a bundled desktop app where it loads
 two differ enough that a design reviewed on one will look off on the other. It is a fallback, not
 a choice.
 
-## 6. No dashes in Korean body text
+## 6. Go easy on em and en dashes in Korean body text
 
-The em dash `—`, the en dash `–`, and a hyphen or minus sign typed as a dash (` - `) are English
-punctuation. Korean prose does not use them to set off an aside or to join two clauses, so in body
-text they read as translated or machine-written copy. Don't swap one dash for another; rewrite the
-sentence with Korean punctuation and structure — a comma, a colon after a noun phrase,
-parentheses, or a second sentence.
+The em dash `—` and the en dash `–` are rare in Korean prose. Used to set off an aside or to join
+two clauses, they make body text read as translated or machine-written copy. Keep them to a
+minimum: when a sentence reaches for one, first try Korean punctuation and structure instead — a
+comma, a colon after a noun phrase, parentheses, or a second sentence.
 
-| Don't | Do |
+| Instead of | Try |
 |---|---|
 | `저장했어요 — 다시 열면 그대로 복원돼요.` | `저장했어요. 다시 열면 그대로 복원돼요.` |
 | `세 가지 방법 – 복사, 이동, 삭제` | `세 가지 방법: 복사, 이동, 삭제` |
-| `기본 글꼴 - Pretendard - 을 씁니다.` | `기본 글꼴(Pretendard)을 씁니다.` |
-| `3-5일`, `3–5일` | `3~5일` |
-| `기온이 -3도까지 내려가요.` | `기온이 영하 3도까지 내려가요.` |
-| `매출 -12%` in a sentence | `매출 12% 감소` |
+| `기본 글꼴 — Pretendard — 을 씁니다.` | `기본 글꼴(Pretendard)을 씁니다.` |
+| `3–5일` | `3~5일` |
 
-Ranges take the tilde `~`, the usual Korean range mark. A negative value in running text reads
-better as words: 영하, 감소, 줄어든.
+For ranges, the tilde `~` is the usual Korean mark.
 
-**The one exception is a short title.** A heading may use a dash for simple emphasis —
-`Pretendard — 한국어 UI의 기본 글꼴` — because it stands alone and is read at a glance. The
-exception ends at the heading. Body text, captions, labels, button text, error messages, alt text
-and descriptions stay dash-free.
+**A short title is where a dash sits comfortably.** A heading may use one for simple emphasis —
+`Pretendard — 한국어 UI의 기본 글꼴` — because it stands alone and is read at a glance. In body
+text, captions, labels, button text, error messages, alt text and descriptions, reach for the
+alternatives above first.
 
-**Not punctuation, not affected:** code and CSS values (`-0.01em`, `keep-all`), identifiers and file
-names, and numbers in tables, charts and data cells, where the minus sign is part of the value.
+This rule covers `—` and `–` only. The hyphen-minus `-` is outside it.
 
 ## Checklist
 
@@ -267,5 +262,5 @@ names, and numbers in tables, charts and data cells, where the minus sign is par
       link on a plain HTML page — with the family name that CSS declares (`Pretendard Variable`
       for the npm variable file, `Pretendard` for the CDN static file)
 - [ ] Sizes checked for legibility in Pretendard itself, not carried over from another font
-- [ ] No `—`, `–` or ` - ` dash in Korean body text (a short title may use one for emphasis);
-      ranges written with `~`, negative values in prose written as words
+- [ ] `—` and `–` kept to a minimum in Korean body text, alternatives tried first (a short title
+      may use one for emphasis); ranges written with `~`
