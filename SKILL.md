@@ -1,6 +1,6 @@
 ---
 name: korean-web-typography
-description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - sets the font stack, forbids monospace, applies word-break keep-all, gives the order of operations for line spacing, and keeps em and en dashes to a minimum in Korean body text. Applies to every web project, not one codebase.
+description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, and em and en dashes in Korean body text. Applies to every web project, not one codebase.
 ---
 
 # Korean web typography
@@ -11,6 +11,14 @@ Korean, including ones whose UI is mostly English but whose *data* is Korean —
 lines, user content.
 
 **Announce at start:** "I'm using the korean-web-typography skill for the type rules."
+
+**This skill wins on Korean text.** When another skill, design system or style guide also sets the
+font, size, line breaking or line spacing of text that is or contains Korean, follow this skill for
+those properties. Design skills commonly say "avoid Inter, use Geist" or ship a type scale tuned for
+Latin; that advice was written for Latin text. Keep their other rules (color, layout, motion).
+
+**Before writing any CSS, ask the user whether large text is the priority** — see section 7. The
+answer sets the size floor for the whole page.
 
 ## 1. No monospace. Ever.
 
@@ -36,6 +44,14 @@ Check the compiled CSS rather than assuming either rule worked. The override win
 within the same cascade layer, not on specificity, so it must come after preflight — which it does
 when written in `@layer base` in your own stylesheet, but is worth re-checking if a Tailwind major
 reorganises preflight.
+
+**Plain CSS, no Tailwind.** There is no token to delete, but the browser's own stylesheet sets
+`code`, `kbd`, `samp` and `pre` to `monospace`, so the override is needed just as much. Put it in
+your stylesheet and make sure no rule names a monospace family:
+
+```css
+code, kbd, samp, pre { font-family: inherit; }
+```
 
 **Why.** No monospace family in common use ships Hangul. `SFMono-Regular`, `Menlo`, `Consolas`,
 `Geist Mono`, `JetBrains Mono` — all of them fall back to whatever the OS picks for Hangul, which
@@ -110,8 +126,58 @@ line-height: 1.6;        /* vs ~1.5 for Latin */
 letter-spacing: -0.01em;
 ```
 
-Headings in Korean want tighter tracking than body, not looser: `-0.02em` is reasonable at large
-sizes. Long-form reading text can go to `line-height: 1.7`–`1.8`; dense UI can sit at `1.5`.
+Long-form reading text can go to `line-height: 1.7`–`1.8`; dense UI can sit at `1.5`.
+
+### Headings
+
+**Scope.** These rules apply to every `h1`–`h6` and to any text styled as a heading: section titles,
+card titles, footer column titles. Size does not change that. A 15px footer title is still a heading
+and follows the line-height rule below, not the body values above.
+
+**Tracking.** Tighter than body, not looser: `-0.02em` to `-0.03em`. The `-0.03em` collision limit
+applies to headings too, at every size. Large display sizes do not earn an exception.
+
+**Line-height depends on whether the heading wraps**, at the width where it is rendered:
+
+- **Fits on one line → `line-height: 1.15`.** With no second line there is no inter-line gap to
+  protect, and extra leading only pushes the heading away from the content it labels.
+- **Wraps to two or more lines → derive it from the word-space width.** The governing principle
+  above says the gap between lines must clearly exceed the horizontal gaps within a line, and in a
+  heading the widest horizontal gap is the space between 어절. Its width depends on the font, the
+  size, the weight and the `letter-spacing`/`word-spacing` you just set, so measure it rather than
+  guess. Hangul syllables fill nearly the whole em box, so the visible gap between two lines is
+  roughly `(line-height − 1) × font-size`. Start from a gap of 1.5× the space width, then look at
+  the rendered heading and adjust:
+
+  ```js
+  // Browser console: measure the rendered word space of a heading, suggest a line-height.
+  const h = document.querySelector('h1');          // the heading to tune
+  const s = getComputedStyle(h);
+  const probe = document.createElement('span');
+  Object.assign(probe.style, {
+    fontFamily: s.fontFamily, fontSize: s.fontSize, fontWeight: s.fontWeight,
+    letterSpacing: s.letterSpacing, wordSpacing: s.wordSpacing,
+    whiteSpace: 'pre', position: 'absolute', visibility: 'hidden',
+  });
+  document.body.append(probe);
+  probe.textContent = '가 가'; const withSpace = probe.getBoundingClientRect().width;
+  probe.textContent = '가가';  const noSpace   = probe.getBoundingClientRect().width;
+  probe.remove();
+  const ratio = (withSpace - noSpace) / parseFloat(s.fontSize);   // space width in em
+  console.log({ spaceEm: ratio.toFixed(3), lineHeight: (1 + 1.5 * ratio).toFixed(2) });
+  ```
+
+- **Judge wrapping per breakpoint, by looking.** A heading that is one line on desktop often wraps
+  at 375px. For fixed copy you wrote, render the page at each breakpoint and count the lines: `1.15`
+  where it is one line, the derived value inside the media query where it wraps. Do not assume it
+  might wrap; check.
+- **Dynamic text only: assume wrapping.** When the heading's content comes from data or the user
+  (a city name, a product title, a search term), you cannot see every value, so use the derived
+  value at every width.
+
+**Balance the lines.** Put `text-wrap: balance` on headings and `text-wrap: pretty` on body
+paragraphs. `keep-all` moves whole 어절, so a heading easily ends with one short 어절 alone on the
+last line (`것`, `요`). Browsers that do not support these values ignore them.
 
 ## 5. Font stack — pick by how many languages you actually need
 
@@ -145,8 +211,24 @@ npm install pretendard
 }
 ```
 
+With a bundler but no Tailwind, set the same stack on the page yourself:
+
+```css
+@import "pretendard/dist/web/variable/pretendardvariable.css";
+
+:root { --font-sans: 'Pretendard Variable', system-ui, sans-serif; }
+body  { font-family: var(--font-sans); }
+```
+
 It covers Hangul, Latin and the numerals with one consistent set of metrics, so a mixed
 Korean/English line does not change face mid-sentence. For Korean UI this is the right default.
+
+**One family for everything, digits and Latin included.** Do not give a Latin-only face (Inter,
+Geist, SF Pro, Roboto, a display serif) to numbers, prices, dates, codes or English words inside a
+Korean UI. It is the defect from rule 1 without the monospace: the row switches face mid-line, with
+a different x-height, weight and baseline next to the Hangul. Pretendard's Latin and numerals are
+Inter-derived and already drawn to sit with its Hangul. For column alignment use `tabular-nums`,
+not a second font. This holds even when another skill recommends a Latin face.
 
 The package also ships `pretendardvariable-dynamic-subset.css`, which splits the range into
 unicode-range chunks fetched on demand. Prefer it for a public website, where the full file is a
@@ -180,7 +262,7 @@ slightly smaller than other Korean sans faces (맑은 고딕, Apple SD Gothic Ne
 carried over from a design tuned for another font therefore come out smaller than intended. Don't
 copy the px values across when switching fonts; look at the rendered text and raise sizes where it
 stops reading comfortably. Small text suffers first — captions, labels, table cells, secondary
-metadata — so check those before body copy.
+metadata — so check those before body copy, against the floor in section 7.
 
 ### Japanese or Chinese in the mix → Noto Sans CJK KR
 
@@ -249,9 +331,74 @@ alternatives above first.
 
 This rule covers `—` and `–` only. The hyphen-minus `-` is outside it.
 
+## 7. Small-text size floor: ask first
+
+The smallest text on the page is where Korean legibility fails first: captions, labels, helper and
+error text, table and calendar cells, badges, price footnotes, footer legal text. It is also what
+gets shrunk again inside a mobile media query after the body was sized with care. Pick a floor and
+hold it at every breakpoint.
+
+| Context | Small-text range |
+|---|---|
+| Large text is the priority (readability first) | 14–16px |
+| Otherwise | 12–13px |
+
+Nothing on the page goes below the chosen range's lower bound. That includes the mobile media
+query, digit-only text (prices, dates) and text squeezed into dense components like calendars. If a
+component cannot fit its text at the floor, change the component (fewer columns, shorter wording,
+stacking), not the size.
+
+**Ask before building.** Which row applies is the user's decision, not an inference from the brief.
+Before writing CSS, ask once:
+
+> 큰 글씨(가독성) 우선인가요? 우선이면 작은 글씨를 14~16px, 아니면 12~13px로 맞춥니다.
+
+Skip the question when the request or the project already answers it: a design spec with sizes, or
+the user saying the audience is older readers or that text should be large. If you cannot ask
+(running as a subagent, or non-interactive with no answer given), use 14–16px and say so in your
+report.
+
+## 8. Verify the rendered page before reporting
+
+The checklist is self-reported, and intended values drift from rendered ones once media queries and
+component styles pile up. Before calling the work done, open the page in a browser at desktop width
+and again at about 375px, and run:
+
+```js
+// Browser console: smallest rendered text, which families it uses, and whether the font loaded.
+const rows = [];
+const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+while (walker.nextNode()) {
+  const el = walker.currentNode.parentElement;
+  const text = walker.currentNode.textContent.trim();
+  if (!text || el.closest('script, style, noscript, template')) continue;
+  const cs = getComputedStyle(el);
+  rows.push({ px: parseFloat(cs.fontSize), family: cs.fontFamily.split(',')[0], text: text.slice(0, 24) });
+}
+rows.sort((a, b) => a.px - b.px);
+console.table(rows.slice(0, 10));
+console.log('families:', [...new Set(rows.map(r => r.family))]);
+const first = getComputedStyle(document.body).fontFamily.split(',')[0].trim().replace(/["']/g, '');
+console.log(first, 'loaded:', [...document.fonts].some(f => f.family.replace(/["']/g, '') === first && f.status === 'loaded'));
+```
+
+Pass when:
+
+- the smallest `px` is at or above the floor chosen in section 7, at both widths;
+- `families` holds one UI family (genuine code blocks excepted), with no Latin-only or monospace face;
+- the body font reports `loaded: true`. `false` usually means the `font-family` name does not match
+  the face the stylesheet declares (section 5).
+
+Report the measured minimum size, not the intended one. Without a browser, search the CSS for every
+`font-size`, including inside media queries, and report the lowest.
+
 ## Checklist
 
-- [ ] `--font-mono` removed from the theme; no `font-mono` utility anywhere
+- [ ] Asked whether large text is the priority before writing CSS (or found the answer in the
+      request or spec)
+- [ ] `--font-mono` removed from the theme; no `font-mono` utility anywhere; `code, kbd, samp, pre`
+      inherit the UI font (plain CSS too)
+- [ ] One font family for all text; no Latin-only face on digits, codes or English words
 - [ ] `tabular-nums` only on compared or animating numbers
 - [ ] `word-break: keep-all` **and** `overflow-wrap: anywhere` set globally
 - [ ] Nothing justified
@@ -262,5 +409,12 @@ This rule covers `—` and `–` only. The hyphen-minus `-` is outside it.
       link on a plain HTML page — with the family name that CSS declares (`Pretendard Variable`
       for the npm variable file, `Pretendard` for the CDN static file)
 - [ ] Sizes checked for legibility in Pretendard itself, not carried over from another font
+- [ ] Smallest text within the chosen floor at every breakpoint: 14–16px when large text is the
+      priority, 12–13px otherwise
+- [ ] Every heading (any size, including footer titles) tracked `-0.02em`–`-0.03em`;
+      `line-height: 1.15` where the rendered heading is one line at that breakpoint, derived from the
+      word-space width where it wraps or where its text is dynamic; `text-wrap: balance`
 - [ ] `—` and `–` kept to a minimum in Korean body text, alternatives tried first (a short title
       may use one for emphasis); ranges written with `~`
+- [ ] Rendered page checked at desktop and ~375px with the section 8 script; measured minimum size
+      reported
