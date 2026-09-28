@@ -1,7 +1,7 @@
 # korean-web-typography
 
-한국어를 표시하는 웹 UI를 위한 Claude Code 플러그인입니다. Claude가 한국어 웹 화면을 만들거나
-고칠 때 다음 규칙을 따르게 합니다.
+한국어를 표시하는 웹 UI를 위한 Claude Code 플러그인입니다. Claude가 한국어 웹 화면을 만들거나 고칠 때 다음 규칙을 따르게 합니다.
+
 
 - 다른 디자인 스킬과 겹치면 한국어 텍스트의 글꼴·크기·줄바꿈·줄 간격은 이 스킬을 따름
 - 고정폭 글꼴 금지 (숫자 정렬은 `tabular-nums`로)
@@ -15,6 +15,16 @@
 - 작은 글씨 하한: 만들기 전에 큰 글씨 우선인지 묻고, 우선이면 14~16px, 아니면 12~13px
 - 본문에서 em dash(—), en dash(–) 사용 자제 (짧은 제목의 강조는 허용, 범위는 `~`)
 - 완료 전 브라우저에서 실제 최소 글자 크기와 글꼴 로딩을 확인
+
+## 샘플 사이트
+
+```
+제약조건: 상호명은 '구름다리', 강조색은 #0F6B5C로 적용함
+```
+[스킬 적용 안함](https://mockmock69401.github.io/korean-web-typography/samples/a.html)<br/>
+[korean-web-typography](https://mockmock69401.github.io/korean-web-typography/samples/b.html)<br/>
+[taste-skills](https://mockmock69401.github.io/korean-web-typography/samples/c.html)
+<br/>
 
 ## 설치
 
