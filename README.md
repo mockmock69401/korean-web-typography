@@ -19,12 +19,18 @@
 ## 샘플 사이트
 
 ```
+Model: Opus 5.5
 제약조건: 상호명은 '구름다리', 강조색은 #0F6B5C로 적용함
 ```
-[스킬 적용 안함](https://mockmock69401.github.io/korean-web-typography/samples/a.html)<br/>
-[korean-web-typography](https://mockmock69401.github.io/korean-web-typography/samples/b.html)<br/>
-[taste-skills](https://mockmock69401.github.io/korean-web-typography/samples/c.html)
+
+|스킬 사용|토큰 사용량|소요시간|
+|------|---|---|
+|[No Skills](https://mockmock69401.github.io/korean-web-typography/samples/a.html)|139.6k|10m 47s|
+|[korean-web-typography](https://mockmock69401.github.io/korean-web-typography/samples/b.html)|109.9k|6m 20s|
+|[taste-skills](https://mockmock69401.github.io/korean-web-typography/samples/c.html)|176.2k|12m 1s|
+|[taste-skills + korean-web-typography](https://mockmock69401.github.io/korean-web-typography/samples/d.html)|189.3k|13m 42s|
 <br/>
+
 
 ## 설치
 
