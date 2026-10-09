@@ -434,19 +434,25 @@ leftover space in one place (the end of the row), or cap the row's width:
 Do not fill the gap with a line, a progress bar, an illustration or repeated text. That makes the
 row busier without bringing the information any closer.
 
-**Badges: align the text, not the box.** A badge's padding and rounded corners push its text in from
-its box. When a badge starts a line above or beside left-aligned text (a tag over a title, a label
-at the start of a row), aligning the box with the column leaves the badge text indented, so the
-left edge looks broken. Align the badge text with the column and let the box hang into the margin by
-its own padding:
+**Badges: hang the box by half its padding.** A badge's padding and rounded corners push its text in
+from its box. When a badge starts a line above or beside left-aligned text (a tag over a title, a
+label at the start of a row), neither edge should sit exactly on the column:
+
+- Box on the column: the badge text starts a full padding inside, and the badge reads as indented.
+- Text on the column: the box sticks out a full padding past the edge, and the badge reads as pushed
+  left.
+
+Split the difference. Pull the box out by about half its horizontal padding, so the box sits a
+little outside the column and the text a little inside, and the badge and the title below read as
+one group:
 
 ```css
-.badge { padding-inline: 8px; margin-inline-start: -8px; }   /* same value on both */
+.badge { padding-inline: 10px; margin-inline-start: -5px; }   /* half the padding */
 ```
 
-Tailwind: `px-2 -ml-2`. Check that the container has that much room on the left, or the hanging box
-is clipped. If it does not, drop the fill and show the label as small bold text, which needs no
-hang.
+Tailwind: `px-2.5 -ml-[5px]`. Check that the container has that much room on the left, or the
+hanging box is clipped. If it does not, drop the fill and show the label as small bold text, which
+needs no hang.
 
 **Type sizes: h1–h6, body and small. Nothing else.**
 
@@ -601,7 +607,8 @@ the page gutter, not past it.
 - [ ] No table unless content the page must carry is a comparison across rows and columns; no
       section created to hold a table
 - [ ] Wide rows closed up by column widths, not filled with lines, bars or illustrations
-- [ ] Badges that start a line hang by their padding so their text aligns with the column
+- [ ] Badges that start a line hang out by about half their horizontal padding: box slightly outside
+      the column, text slightly inside
 - [ ] Exactly eight size tokens (h1–h6, body, small); headings by hierarchy depth, other text body
       or small; no one-off sizes, and a missing tier is answered with the nearest token
 - [ ] Text links underlined only on `:hover` and `:focus-visible`, link color at least 3:1 against
