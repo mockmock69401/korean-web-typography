@@ -1,6 +1,6 @@
 ---
 name: korean-web-typography
-description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, em and en dashes in Korean body text, when to use cards and tables, the h1-h6, body and small size tokens, hover-only link underlines with a link-only color, and a right-edge overflow check at 375px. Applies to every web project, not one codebase.
+description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, em and en dashes and Korean date notation, when to box content and when to use tables, column layout and badge alignment, the h1-h6, body and small size tokens, hover-only link underlines with a link-only color, and a right-edge overflow check at 375px. Applies to every web project, not one codebase.
 ---
 
 # Korean web typography
@@ -15,8 +15,8 @@ lines, user content.
 **This skill wins on Korean text.** When another skill, design system or style guide also sets the
 font, size, line breaking or line spacing of text that is or contains Korean, follow this skill for
 those properties. Design skills commonly say "avoid Inter, use Geist" or ship a type scale tuned for
-Latin; that advice was written for Latin text. The same goes for when to use cards and tables, the
-type size tokens (section 8) and link underlines (section 9). Keep their other rules (color,
+Latin; that advice was written for Latin text. The same goes for when to use boxes and tables, the
+type size tokens (section 8), link underlines (section 9) and Korean date notation (section 6). Keep their other rules (color,
 layout, motion).
 
 **Before writing any CSS, ask the user whether large text is the priority** — see section 7. The
@@ -133,7 +133,7 @@ Long-form reading text can go to `line-height: 1.7`–`1.8`; dense UI can sit at
 ### Headings
 
 **Scope.** These rules apply to every `h1`–`h6` and to any text styled as a heading: section titles,
-card titles, footer column titles. Size does not change that. A 15px footer title is still a heading
+item titles, footer column titles. Size does not change that. A 15px footer title is still a heading
 and follows the line-height rule below, not the body values above.
 
 **Tracking.** Tighter than body, not looser: `-0.02em` to `-0.03em`. The `-0.03em` collision limit
@@ -310,7 +310,9 @@ you actually serve, or accept the weight in a bundled desktop app where it loads
 two differ enough that a design reviewed on one will look off on the other. It is a fallback, not
 a choice.
 
-## 6. Go easy on em and en dashes in Korean body text
+## 6. Korean notation: dashes and dates
+
+### Go easy on em and en dashes in Korean body text
 
 The em dash `—` and the en dash `–` are rare in Korean prose. Used to set off an aside or to join
 two clauses, they make body text read as translated or machine-written copy. Keep them to a
@@ -332,6 +334,37 @@ text, captions, labels, button text, error messages, alt text and descriptions, 
 alternatives above first.
 
 This rule covers `—` and `–` only. The hyphen-minus `-` is outside it.
+
+### Write dates in Korean notation
+
+Every date the page shows is written in Korean order and units, with the weekday in parentheses
+attached to the day without a space:
+
+| Use | Format |
+|---|---|
+| Full | `2026년 10월 16일(금)` |
+| Short, year obvious from context | `10월 16일(금)` |
+| Numeric, only where space is tight | `2026. 10. 16.` |
+| Range | `10월 16일(금)~19일(월)` |
+
+Not `10/16/2026`, `2026-10-16`, `Oct 16` or `10.16(금)` in displayed text. A machine-readable
+value (`<time datetime="2026-10-16">`, a form value) stays ISO; only what the reader sees changes.
+
+**Format it yourself.** `Intl.DateTimeFormat('ko-KR')` is not consistent: with a year it drops the
+parentheses (`2026년 10월 16일 금`), without one it adds a space before them (`10월 16일 (금)`). A
+small helper gives the same output everywhere:
+
+```js
+const WEEKDAY = '일월화수목금토';
+const koDate = (d, withYear = false) =>
+  `${withYear ? `${d.getFullYear()}년 ` : ''}${d.getMonth() + 1}월 ${d.getDate()}일(${WEEKDAY[d.getDay()]})`;
+```
+
+**Native date inputs do not follow the page.** The text inside `<input type="date">` is drawn in the
+browser's language, not the page's `lang`, so an English-language browser shows `10/16/2026` on a
+Korean page. When the field shows the chosen date, display it as Korean text from the helper above
+and keep the native input only for picking: a button whose label is the formatted date and which
+calls `input.showPicker()`, with the input itself visually hidden.
 
 ## 7. Small-text size floor: ask first
 
@@ -360,28 +393,60 @@ the user saying the audience is older readers or that text should be large. If y
 (running as a subagent, or non-interactive with no answer given), use 14–16px and say so in your
 report.
 
-## 8. Structure by hierarchy: cards, tables and type sizes
+## 8. Structure by hierarchy: boxes, tables, columns and type sizes
 
-Cards and tables are the two components most often added for looks. A box around every group and a
-grid around every list flatten the page: everything gets the same visual weight, and the heading
-hierarchy readers scan by is lost. Use them only when the content needs them.
+Boxes and tables are the two things most often added for looks. A box around every group and a grid
+around every list flatten the page: everything gets the same visual weight, and the heading
+hierarchy readers scan by is lost. Neither is a default. The page is laid out by order, spacing,
+headings, lists and dividers, and a box or a table is the exception that has to earn its place.
 
-**Card: only when it acts as a button.** A card is a surface the user clicks or taps as a whole: a
-product to open, a plan to choose, a project to enter. Build it as one link or button (`<a>` or
-`<button>`) with hover, focus and pressed states, and put no other link or button inside it. HTML
-does not allow interactive content inside `<a>` or `<button>`, and a second target makes it unclear
-what a click does. If nothing happens when the surface is clicked, or if it holds its own buttons,
-it is not a card. Show it as a section: a heading, the content under it, and spacing or a divider
-between groups.
+**Box only what is pressed.** A border, shadow or fill around a group marks a button, not a group of
+content.
 
-**Table: only when comparing data is the point.** A table is for reading across rows and down
-columns to compare values: plans against features, versions against sizes, months against figures.
-One record's details, a list of items or a set of label and value pairs is not a comparison. Use a
-heading with a list, or a definition list (`dl`).
+- An item that carries information and an action (a flight result, a deal, a product in a list) is
+  not boxed. Lay its content out by hierarchy, separate items with spacing or a divider, and make
+  only the action a button (`선택하기`, `이 노선 검색`).
+- A box around a whole item is allowed only when the item is one small button whose content is just
+  its label: a date chip with its fare, a seat-class option, a trip-type toggle. Build it as one
+  `<button>` or `<a>` with hover, focus and pressed states, and put no other link or button inside
+  it. HTML does not allow interactive content inside `<a>` or `<button>`, and a second target makes
+  it unclear what a click does.
+- Content that is not pressed (a search form, a feature list, a guide, a set of facts) gets no box.
+  Show it as a heading, the content under it, and spacing or a divider between groups.
+- No box inside a box, and no table inside a box.
 
-**Everything else: avoid both. Place content by hierarchy.** Order, spacing, headings,
-lists and dividers carry the structure. Do not nest a card in a card, and do not wrap a table in a
-card.
+**Tables: never add one for its own sake.** A page does not need a table. Do not create a section so
+that a table has something to show, such as a fare-type comparison or a route price grid nobody
+asked for. Use one only when content the page must carry anyway is values compared across rows and
+columns, and reading it any other way would be harder. One record's details, a list of items or a
+set of label and value pairs is not a comparison: use a heading with a list, or a definition list
+(`dl`). When in doubt, leave the table out.
+
+**Close wide gaps with columns, not filler.** When a row is wide and its content sits at the two ends
+(an airline at the left, a price at the right), the eye loses the row on the way across. That is a
+layout problem. Size the columns to their content so related items sit next to each other, put the
+leftover space in one place (the end of the row), or cap the row's width:
+
+```css
+.row { display: grid; grid-template-columns: auto auto auto 1fr auto; column-gap: 24px; }
+```
+
+Do not fill the gap with a line, a progress bar, an illustration or repeated text. That makes the
+row busier without bringing the information any closer.
+
+**Badges: align the text, not the box.** A badge's padding and rounded corners push its text in from
+its box. When a badge starts a line above or beside left-aligned text (a tag over a title, a label
+at the start of a row), aligning the box with the column leaves the badge text indented, so the
+left edge looks broken. Align the badge text with the column and let the box hang into the margin by
+its own padding:
+
+```css
+.badge { padding-inline: 8px; margin-inline-start: -8px; }   /* same value on both */
+```
+
+Tailwind: `px-2 -ml-2`. Check that the container has that much room on the left, or the hanging box
+is clipped. If it does not, drop the fill and show the label as small bold text, which needs no
+hang.
 
 **Type sizes: h1–h6, body and small. Nothing else.**
 
@@ -389,7 +454,7 @@ The page has exactly eight sizes, defined once as tokens:
 
 | Token | Used for |
 |---|---|
-| `h1`–`h6` | Every piece of text that works as a heading, whatever its element (section titles, card titles, footer column titles) |
+| `h1`–`h6` | Every piece of text that works as a heading, whatever its element (section titles, item titles, footer column titles) |
 | body | Body text: paragraphs, list items, table cells, button and link text |
 | small | The small text listed in section 7: captions, labels, helper and error text, badges, footnotes, footer legal text. One size, inside the floor range chosen there |
 
@@ -433,8 +498,8 @@ Tailwind: `no-underline hover:underline focus-visible:underline underline-offset
 - **Offset the underline from Hangul.** Browsers usually do not skip ink for CJK, so an underline
   at the default position touches the bottom strokes of Hangul syllables (`ㅡ`, `ㅗ` and 받침).
   Start from `text-underline-offset: 0.2em`, then look at the rendered link and adjust.
-- **Scope.** This covers text links: inline links in body text, navigation, footer links. A card
-  (section 8) or a link styled as a button is not a text link. It shows hover with its own state,
+- **Scope.** This covers text links: inline links in body text, navigation, footer links. A boxed
+  button (section 8) or a link styled as a button is not a text link. It shows hover with its own state,
   such as background or border, and does not underline its contents.
 
 ## 10. Verify the rendered page before reporting
@@ -529,12 +594,18 @@ the page gutter, not past it.
       word-space width where it wraps or where its text is dynamic; `text-wrap: balance`
 - [ ] `—` and `–` kept to a minimum in Korean body text, alternatives tried first (a short title
       may use one for emphasis); ranges written with `~`
-- [ ] Cards only where the whole surface is a button; tables only where comparing data is the point;
-      everywhere else content placed by hierarchy, no card or table
+- [ ] Displayed dates in Korean notation (`2026년 10월 16일(금)`, `10월 16일(금)`), formatted by a
+      helper; native date inputs not showing the browser's own format
+- [ ] Boxes only around what is pressed: items with an action are laid out unboxed with only the
+      action as a button; whole-item boxes only for small buttons such as date chips
+- [ ] No table unless content the page must carry is a comparison across rows and columns; no
+      section created to hold a table
+- [ ] Wide rows closed up by column widths, not filled with lines, bars or illustrations
+- [ ] Badges that start a line hang by their padding so their text aligns with the column
 - [ ] Exactly eight size tokens (h1–h6, body, small); headings by hierarchy depth, other text body
       or small; no one-off sizes, and a missing tier is answered with the nearest token
 - [ ] Text links underlined only on `:hover` and `:focus-visible`, link color at least 3:1 against
-      surrounding text, underline offset clear of Hangul; cards and button-style links not underlined
+      surrounding text, underline offset clear of Hangul; boxed and button-style links not underlined
 - [ ] Link color used for links only; prices, table highlights and labels emphasized by weight, size
       or text color
 - [ ] Rendered page checked at desktop and ~375px with the section 10 script; measured minimum size
