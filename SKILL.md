@@ -1,6 +1,6 @@
 ---
 name: korean-web-typography
-description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, em and en dashes in Korean body text, when to use cards and tables, the h1-h6, body and small size tokens, and hover-only link underlines. Applies to every web project, not one codebase.
+description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, em and en dashes in Korean body text, when to use cards and tables, the h1-h6, body and small size tokens, hover-only link underlines with a link-only color, and a right-edge overflow check at 375px. Applies to every web project, not one codebase.
 ---
 
 # Korean web typography
@@ -425,6 +425,11 @@ Tailwind: `no-underline hover:underline focus-visible:underline underline-offset
   marks a link inside body text. Give it a color that clearly differs from the surrounding text, at
   least 3:1 contrast against it (WCAG technique G183). Tailwind's preflight sets
   `a { color: inherit }`, so a link with no color utility looks exactly like body text.
+- **Keep the link color for links only.** If the same color also marks prices, highlighted values in
+  a table, a recommended column header or a label, the reader can no longer tell links from
+  emphasis, and that text looks clickable when it is not. Text that is not a link does not use the
+  link color or a color hard to tell from it. Emphasize it with weight, size or the text color
+  instead. Filled surfaces such as buttons and badges may still use the accent as a background.
 - **Offset the underline from Hangul.** Browsers usually do not skip ink for CJK, so an underline
   at the default position touches the bottom strokes of Hangul syllables (`ㅡ`, `ㅗ` and 받침).
   Start from `text-underline-offset: 0.2em`, then look at the rendered link and adjust.
@@ -468,6 +473,38 @@ Pass when:
 Report the measured minimum size, not the intended one. Without a browser, search the CSS for every
 `font-size`, including inside media queries, and report the lowest.
 
+**Then check the right edge at about 375px.** The absence of a horizontal scrollbar does not prove
+that nothing overflows. `overflow-x: hidden` or `clip` on `body` or a section cuts the overflow off
+silently, so a field ends at the screen edge or is cropped. Native form controls are the usual cause.
+A date, time or number input and a `select` have an intrinsic minimum width that can be wider than
+their grid or flex cell. Run:
+
+```js
+// Browser console at ~375px: elements that run past the right edge of the viewport.
+const vw = document.documentElement.clientWidth;
+const inScroller = el => {
+  for (let e = el.parentElement; e; e = e.parentElement) {
+    if (['auto', 'scroll'].includes(getComputedStyle(e).overflowX)) return true;
+  }
+  return false;
+};
+const past = [...document.body.querySelectorAll('*')].filter(el => {
+  if (el.closest('svg, [aria-hidden="true"]')) return false;   // decoration may bleed on purpose
+  const r = el.getBoundingClientRect();
+  return r.width && r.height && r.right > vw + 0.5 && !inScroller(el);
+});
+console.table(past.map(el => ({
+  el: el.tagName.toLowerCase() + (el.id ? '#' + el.id : ''),
+  pastBy: Math.round(el.getBoundingClientRect().right - vw) + 'px',
+})));
+```
+
+Pass when the table is empty. Content inside a deliberate horizontal scroller (a date strip, a wide
+table wrapper) is skipped. For anything listed, give grid tracks `minmax(0, 1fr)` and give flex and
+grid children and the controls themselves `min-width: 0`. The script only catches what crosses the
+screen edge. Also look at the 375px screenshot and check that every control and text block ends at
+the page gutter, not past it.
+
 ## Checklist
 
 - [ ] Asked whether large text is the priority before writing CSS (or found the answer in the
@@ -498,5 +535,9 @@ Report the measured minimum size, not the intended one. Without a browser, searc
       or small; no one-off sizes, and a missing tier is answered with the nearest token
 - [ ] Text links underlined only on `:hover` and `:focus-visible`, link color at least 3:1 against
       surrounding text, underline offset clear of Hangul; cards and button-style links not underlined
+- [ ] Link color used for links only; prices, table highlights and labels emphasized by weight, size
+      or text color
 - [ ] Rendered page checked at desktop and ~375px with the section 10 script; measured minimum size
       reported
+- [ ] Right-edge script empty at ~375px, and every control and text block ends at the page gutter in
+      the screenshot
