@@ -1,6 +1,6 @@
 ---
 name: korean-web-typography
-description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, and em and en dashes in Korean body text. Applies to every web project, not one codebase.
+description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, em and en dashes in Korean body text, when to use cards and tables, the h1-h6, body and small size tokens, and hover-only link underlines. Applies to every web project, not one codebase.
 ---
 
 # Korean web typography
@@ -15,7 +15,9 @@ lines, user content.
 **This skill wins on Korean text.** When another skill, design system or style guide also sets the
 font, size, line breaking or line spacing of text that is or contains Korean, follow this skill for
 those properties. Design skills commonly say "avoid Inter, use Geist" or ship a type scale tuned for
-Latin; that advice was written for Latin text. Keep their other rules (color, layout, motion).
+Latin; that advice was written for Latin text. The same goes for when to use cards and tables, the
+type size tokens (section 8) and link underlines (section 9). Keep their other rules (color,
+layout, motion).
 
 **Before writing any CSS, ask the user whether large text is the priority** — see section 7. The
 answer sets the size floor for the whole page.
@@ -358,7 +360,79 @@ the user saying the audience is older readers or that text should be large. If y
 (running as a subagent, or non-interactive with no answer given), use 14–16px and say so in your
 report.
 
-## 8. Verify the rendered page before reporting
+## 8. Structure by hierarchy: cards, tables and type sizes
+
+Cards and tables are the two components most often added for looks. A box around every group and a
+grid around every list flatten the page: everything gets the same visual weight, and the heading
+hierarchy readers scan by is lost. Use them only when the content needs them.
+
+**Card: only when it acts as a button.** A card is a surface the user clicks or taps as a whole: a
+product to open, a plan to choose, a project to enter. Build it as one link or button (`<a>` or
+`<button>`) with hover, focus and pressed states, and put no other link or button inside it. HTML
+does not allow interactive content inside `<a>` or `<button>`, and a second target makes it unclear
+what a click does. If nothing happens when the surface is clicked, or if it holds its own buttons,
+it is not a card. Show it as a section: a heading, the content under it, and spacing or a divider
+between groups.
+
+**Table: only when comparing data is the point.** A table is for reading across rows and down
+columns to compare values: plans against features, versions against sizes, months against figures.
+One record's details, a list of items or a set of label and value pairs is not a comparison. Use a
+heading with a list, or a definition list (`dl`).
+
+**Everything else: avoid both. Place content by hierarchy.** Order, spacing, headings,
+lists and dividers carry the structure. Do not nest a card in a card, and do not wrap a table in a
+card.
+
+**Type sizes: h1–h6, body and small. Nothing else.**
+
+The page has exactly eight sizes, defined once as tokens:
+
+| Token | Used for |
+|---|---|
+| `h1`–`h6` | Every piece of text that works as a heading, whatever its element (section titles, card titles, footer column titles) |
+| body | Body text: paragraphs, list items, table cells, button and link text |
+| small | The small text listed in section 7: captions, labels, helper and error text, badges, footnotes, footer legal text. One size, inside the floor range chosen there |
+
+- Headings take `h1`–`h6`, everything else takes body or small. No text gets a size of its own.
+- Pick the tier by the content's depth in the page, not by how big it should look. The page title is
+  `h1`, its sections `h2`, their subsections `h3`, and so on. Do not skip a tier when a level in
+  between exists.
+- The same level gets the same size everywhere on the page.
+- **If no tier fits, use the nearest one.** Do not add a one-off size, and do not nudge a tier with
+  `font-size: 17px` or a `scale` utility to make it fit. A level deeper than `h6` uses `h6`. A text
+  that seems to want a size between two tokens takes whichever token is closer.
+- A breakpoint may redefine the tokens, but it still has these eight and nothing else. No size
+  goes below the small token, and the small token never goes below the floor from section 7.
+- The heading rules in section 4 (tracking, line height, `text-wrap: balance`) apply to every
+  heading tier.
+
+## 9. Links: underline on hover only
+
+A text link has no underline at rest and gets one on hover. Keyboard focus is the keyboard
+equivalent of hover, so `:focus-visible` gets the same underline.
+
+```css
+a { text-decoration: none; }
+a:hover, a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+```
+
+Tailwind: `no-underline hover:underline focus-visible:underline underline-offset-[0.2em]`.
+
+- **Color carries the link at rest.** With no underline, the link color is the only thing that
+  marks a link inside body text. Give it a color that clearly differs from the surrounding text, at
+  least 3:1 contrast against it (WCAG technique G183). Tailwind's preflight sets
+  `a { color: inherit }`, so a link with no color utility looks exactly like body text.
+- **Offset the underline from Hangul.** Browsers usually do not skip ink for CJK, so an underline
+  at the default position touches the bottom strokes of Hangul syllables (`ㅡ`, `ㅗ` and 받침).
+  Start from `text-underline-offset: 0.2em`, then look at the rendered link and adjust.
+- **Scope.** This covers text links: inline links in body text, navigation, footer links. A card
+  (section 8) or a link styled as a button is not a text link. It shows hover with its own state,
+  such as background or border, and does not underline its contents.
+
+## 10. Verify the rendered page before reporting
 
 The checklist is self-reported, and intended values drift from rendered ones once media queries and
 component styles pile up. Before calling the work done, open the page in a browser at desktop width
@@ -378,6 +452,7 @@ while (walker.nextNode()) {
 rows.sort((a, b) => a.px - b.px);
 console.table(rows.slice(0, 10));
 console.log('families:', [...new Set(rows.map(r => r.family))]);
+console.log('sizes:', [...new Set(rows.map(r => r.px))].sort((a, b) => b - a));
 const first = getComputedStyle(document.body).fontFamily.split(',')[0].trim().replace(/["']/g, '');
 console.log(first, 'loaded:', [...document.fonts].some(f => f.family.replace(/["']/g, '') === first && f.status === 'loaded'));
 ```
@@ -385,6 +460,7 @@ console.log(first, 'loaded:', [...document.fonts].some(f => f.family.replace(/["
 Pass when:
 
 - the smallest `px` is at or above the floor chosen in section 7, at both widths;
+- every value in `sizes` is one of the eight tokens at that width: h1–h6, body or small (section 8);
 - `families` holds one UI family (genuine code blocks excepted), with no Latin-only or monospace face;
 - the body font reports `loaded: true`. `false` usually means the `font-family` name does not match
   the face the stylesheet declares (section 5).
@@ -416,5 +492,11 @@ Report the measured minimum size, not the intended one. Without a browser, searc
       word-space width where it wraps or where its text is dynamic; `text-wrap: balance`
 - [ ] `—` and `–` kept to a minimum in Korean body text, alternatives tried first (a short title
       may use one for emphasis); ranges written with `~`
-- [ ] Rendered page checked at desktop and ~375px with the section 8 script; measured minimum size
+- [ ] Cards only where the whole surface is a button; tables only where comparing data is the point;
+      everywhere else content placed by hierarchy, no card or table
+- [ ] Exactly eight size tokens (h1–h6, body, small); headings by hierarchy depth, other text body
+      or small; no one-off sizes, and a missing tier is answered with the nearest token
+- [ ] Text links underlined only on `:hover` and `:focus-visible`, link color at least 3:1 against
+      surrounding text, underline offset clear of Hangul; cards and button-style links not underlined
+- [ ] Rendered page checked at desktop and ~375px with the section 10 script; measured minimum size
       reported

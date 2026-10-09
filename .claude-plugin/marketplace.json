@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "korean-web-typography",
-      "description": "Korean web typography rules: Pretendard font stack and sizing, small-text size floors, heading line height, one family for digits and Latin, no monospace, word-break keep-all, no justification, the order of operations for line spacing, and sparing use of em and en dashes in Korean body text.",
+      "description": "Korean web typography rules: Pretendard font stack and sizing, small-text size floors, heading line height, one family for digits and Latin, no monospace, word-break keep-all, no justification, the order of operations for line spacing, sparing use of em and en dashes in Korean body text, and cards, tables and text sizes structured by the h1-h6 hierarchy, and hover-only link underlines.",
       "source": "./",
       "homepage": "https://github.com/mockmock69401/korean-web-typography"
     }
