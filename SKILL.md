@@ -1,6 +1,6 @@
 ---
 name: korean-web-typography
-description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, and em and en dashes in Korean body text. Applies to every web project, not one codebase.
+description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, em and en dashes in Korean body text, and when to use cards and tables and how to map text sizes to the h1-h6 hierarchy. Applies to every web project, not one codebase.
 ---
 
 # Korean web typography
@@ -358,7 +358,43 @@ the user saying the audience is older readers or that text should be large. If y
 (running as a subagent, or non-interactive with no answer given), use 14–16px and say so in your
 report.
 
-## 8. Verify the rendered page before reporting
+## 8. Structure by hierarchy: cards, tables and type sizes
+
+Cards and tables are the two components most often added for looks. A box around every group and a
+grid around every list flatten the page: everything gets the same visual weight, and the heading
+hierarchy that Korean readers scan by is lost. Use them only when the content needs them.
+
+**Card: only when it acts as a button.** A card is a surface the user clicks or taps as a whole: a
+product to open, a plan to choose, a project to enter. Build it as one link or button (`<a>` or
+`<button>`) with hover, focus and pressed states. If nothing happens when the surface is clicked,
+it is not a card. Show it as a section: a heading, the content under it, and spacing or a divider
+between groups.
+
+**Table: only when comparing data is the point.** A table is for reading across rows and down
+columns to compare values: plans against features, versions against sizes, months against figures.
+One record's details, a list of items or a set of label and value pairs is not a comparison. Use a
+heading with a list, or a definition list (`dl`).
+
+**Everything else: no card, no table. Place content by hierarchy.** Order, spacing, headings,
+lists and dividers carry the structure. Do not nest a card in a card, and do not wrap a table in a
+card.
+
+**Type sizes: only h1–h6, matched to hierarchy.**
+
+- Define the `h1`–`h6` sizes once, as tokens, and use them for every piece of text that works as a
+  heading, whatever its element (section titles, card titles, footer column titles).
+- Pick the tier by the content's depth in the page, not by how big it should look. The page title is
+  `h1`, its sections `h2`, their subsections `h3`, and so on. Do not skip a tier when a level in
+  between exists.
+- The same level gets the same size everywhere on the page.
+- **If no tier fits, use the nearest one.** Do not add a one-off size, and do not nudge a tier with
+  `font-size: 17px` or a `scale` utility to make it fit. Needing a size that is not in the scale is
+  a sign the hierarchy is wrong, so fix the structure.
+- Body text uses the body size. The smallest tier and the body size still sit above the floor from
+  section 7.
+- The heading rules in section 4 (tracking, line height, `text-wrap: balance`) apply to every tier.
+
+## 9. Verify the rendered page before reporting
 
 The checklist is self-reported, and intended values drift from rendered ones once media queries and
 component styles pile up. Before calling the work done, open the page in a browser at desktop width
@@ -416,5 +452,9 @@ Report the measured minimum size, not the intended one. Without a browser, searc
       word-space width where it wraps or where its text is dynamic; `text-wrap: balance`
 - [ ] `—` and `–` kept to a minimum in Korean body text, alternatives tried first (a short title
       may use one for emphasis); ranges written with `~`
-- [ ] Rendered page checked at desktop and ~375px with the section 8 script; measured minimum size
+- [ ] Cards only where the whole surface is a button; tables only where comparing data is the point;
+      everywhere else content placed by hierarchy, no card or table
+- [ ] Text sizes come only from the h1–h6 tiers and the body size, chosen by hierarchy depth; no
+      one-off sizes, and a missing tier is answered with the nearest tier
+- [ ] Rendered page checked at desktop and ~375px with the section 9 script; measured minimum size
       reported
