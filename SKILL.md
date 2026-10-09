@@ -15,7 +15,8 @@ lines, user content.
 **This skill wins on Korean text.** When another skill, design system or style guide also sets the
 font, size, line breaking or line spacing of text that is or contains Korean, follow this skill for
 those properties. Design skills commonly say "avoid Inter, use Geist" or ship a type scale tuned for
-Latin; that advice was written for Latin text. Keep their other rules (color, layout, motion).
+Latin; that advice was written for Latin text. The same goes for when to use cards and tables and
+for the h1–h6 type scale (section 8). Keep their other rules (color, layout, motion).
 
 **Before writing any CSS, ask the user whether large text is the priority** — see section 7. The
 answer sets the size floor for the whole page.
@@ -362,11 +363,13 @@ report.
 
 Cards and tables are the two components most often added for looks. A box around every group and a
 grid around every list flatten the page: everything gets the same visual weight, and the heading
-hierarchy that Korean readers scan by is lost. Use them only when the content needs them.
+hierarchy readers scan by is lost. Use them only when the content needs them.
 
 **Card: only when it acts as a button.** A card is a surface the user clicks or taps as a whole: a
 product to open, a plan to choose, a project to enter. Build it as one link or button (`<a>` or
-`<button>`) with hover, focus and pressed states. If nothing happens when the surface is clicked,
+`<button>`) with hover, focus and pressed states, and put no other link or button inside it. HTML
+does not allow interactive content inside `<a>` or `<button>`, and a second target makes it unclear
+what a click does. If nothing happens when the surface is clicked, or if it holds its own buttons,
 it is not a card. Show it as a section: a heading, the content under it, and spacing or a divider
 between groups.
 
@@ -375,7 +378,7 @@ columns to compare values: plans against features, versions against sizes, month
 One record's details, a list of items or a set of label and value pairs is not a comparison. Use a
 heading with a list, or a definition list (`dl`).
 
-**Everything else: no card, no table. Place content by hierarchy.** Order, spacing, headings,
+**Everything else: avoid both. Place content by hierarchy.** Order, spacing, headings,
 lists and dividers carry the structure. Do not nest a card in a card, and do not wrap a table in a
 card.
 
@@ -388,8 +391,8 @@ card.
   between exists.
 - The same level gets the same size everywhere on the page.
 - **If no tier fits, use the nearest one.** Do not add a one-off size, and do not nudge a tier with
-  `font-size: 17px` or a `scale` utility to make it fit. Needing a size that is not in the scale is
-  a sign the hierarchy is wrong, so fix the structure.
+  `font-size: 17px` or a `scale` utility to make it fit. A level deeper than `h6` uses `h6`. A text
+  that seems to want a size between two tiers takes whichever tier is closer.
 - Body text uses the body size. The smallest tier and the body size still sit above the floor from
   section 7.
 - The heading rules in section 4 (tracking, line height, `text-wrap: balance`) apply to every tier.
@@ -414,6 +417,7 @@ while (walker.nextNode()) {
 rows.sort((a, b) => a.px - b.px);
 console.table(rows.slice(0, 10));
 console.log('families:', [...new Set(rows.map(r => r.family))]);
+console.log('sizes:', [...new Set(rows.map(r => r.px))].sort((a, b) => b - a));
 const first = getComputedStyle(document.body).fontFamily.split(',')[0].trim().replace(/["']/g, '');
 console.log(first, 'loaded:', [...document.fonts].some(f => f.family.replace(/["']/g, '') === first && f.status === 'loaded'));
 ```
@@ -421,6 +425,7 @@ console.log(first, 'loaded:', [...document.fonts].some(f => f.family.replace(/["
 Pass when:
 
 - the smallest `px` is at or above the floor chosen in section 7, at both widths;
+- every value in `sizes` is one of the h1–h6 tiers or the body size at that width (section 8);
 - `families` holds one UI family (genuine code blocks excepted), with no Latin-only or monospace face;
 - the body font reports `loaded: true`. `false` usually means the `font-family` name does not match
   the face the stylesheet declares (section 5).
