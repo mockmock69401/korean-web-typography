@@ -1,6 +1,6 @@
 ---
 name: korean-web-typography
-description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, em and en dashes and Korean date notation, when to box content, card layout, when to use tables, column layout and badge alignment, the h1-h6, body and small size tokens, hover-only link underlines with a link-only color, and a right-edge overflow check at 375px. Applies to every web project, not one codebase.
+description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, em and en dashes and Korean date notation, when to box content, card layout, borderless filled controls, when to use tables, column layout and badge alignment, the h1-h6, body and small size tokens, hover-only link underlines with a link-only color, and a right-edge overflow check at 375px. Applies to every web project, not one codebase.
 ---
 
 # Korean web typography
@@ -419,6 +419,41 @@ content.
   Show it as a heading, the content under it, and spacing or a divider between groups.
 - No box inside a box, and no table inside a box.
 
+**Controls: a fill is enough, a frame is optional.** Inputs, selects and buttons are often drawn as
+small cards: a white box with a border, a radius and sometimes a shadow. That is not required. A
+control can be a plain fill with no border at all, which is quieter and keeps the page from turning
+into a grid of boxes.
+
+```css
+.field {                                   /* input, select, textarea */
+  background: var(--fill);                 /* clearly darker than the surface it sits on */
+  border: 0; border-radius: 10px; padding: 12px 14px;
+  box-sizing: border-box; width: 100%; min-width: 0;   /* padding stays inside the grid cell */
+}
+.field:hover         { background: var(--fill-hover); }
+.field:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.field[aria-invalid="true"] { box-shadow: inset 0 0 0 1.5px var(--error); }
+select.field { appearance: none; background-image: url("chevron.svg"); background-repeat: no-repeat;
+               background-position: right 14px center; padding-right: 40px; }
+
+.button-secondary { background: var(--accent-soft); color: var(--accent-ink); border: 0; }
+```
+
+Without a border, these carry the job instead:
+
+- **The fill reads as a field.** Pick it against the surface it sits on, not against white: on a
+  tinted band, a white fill does what a grey one does on a white page. If the fill is too faint to
+  see, add the border back rather than leave a field that looks like empty space.
+- **The label stays visible** above the field. A placeholder alone disappears on the first keystroke.
+- **Focus is drawn, not implied.** With no border to darken, keyboard focus needs its own ring
+  (`:focus-visible` outline) with at least 3:1 contrast against the surface.
+- **Error is more than a color change of the fill.** Add a 1.5px inset line in the error color and
+  the error text under the field.
+- **A `select` needs its own arrow.** `appearance: none` removes the native chevron along with the
+  native frame.
+
+Use one treatment per page: either every control is filled, or every control is framed.
+
 **Tables: never add one for its own sake.** A page does not need a table. Do not create a section so
 that a table has something to show, such as a fare-type comparison or a route price grid nobody
 asked for. Use one only when content the page must carry anyway is values compared across rows and
@@ -656,6 +691,9 @@ the page gutter, not past it.
       titles and prices line up across the row
 - [ ] No table unless content the page must carry is a comparison across rows and columns; no
       section created to hold a table
+- [ ] Inputs, selects and buttons not drawn as cards by default; a borderless fill is fine when it
+      reads as a field on its surface, with a visible label, a `:focus-visible` ring, an error line
+      and a custom `select` arrow; one treatment for all controls on the page
 - [ ] Wide rows closed up by column widths, not filled with lines, bars or illustrations
 - [ ] Badges that start a line hang out by about half their horizontal padding: box slightly outside
       the column, text slightly inside
