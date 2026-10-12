@@ -403,14 +403,14 @@ headings, lists and dividers, and a box or a table is the exception that has to 
 **Box only what is pressed.** A border, shadow or fill around a group marks a button, not a group of
 content.
 
-- An item that carries information and its own action button (a flight result with `선택하기`, a
-  product row with `담기`) is not boxed. Lay its content out by hierarchy, separate items with
+- An item that carries information and its own action button (a product row with `담기`, a course
+  row with `수강 신청`) is not boxed. Lay its content out by hierarchy, separate items with
   spacing or a divider, and make only the action a button.
 - A box around a whole item is allowed in two cases, and in both the box is the one thing pressed:
-  - **A small button** whose content is just its label: a date chip with its fare, a seat-class
-    option, a trip-type toggle.
-  - **A card**: the whole item is one link or button that opens or chooses it (a deal that starts a
-    search, a destination that opens its page). It follows the card layout below.
+  - **A small button** whose content is just its label: a size chip with its stock, a delivery
+    option toggle, a filter chip.
+  - **A card**: the whole item is one link or button that opens or chooses it (a product that opens
+    its page, a concert that opens its seat map). It follows the card layout below.
 
   Build either as one `<button>` or `<a>` with hover, focus and pressed states, and put no other link
   or button inside it. HTML does not allow interactive content inside `<a>` or `<button>`, and a
@@ -448,18 +448,20 @@ Without a border, these carry the job instead:
 - **The field keeps a name, but the label can move.** A visible label above the field is one option,
   not a requirement. Where the design reads cleaner without it, let the placeholder carry the label:
   - **Placeholder as label**, when the typed value explains itself: a search box, an email field,
-    `출발지` that ends up showing `서울/김포`. The placeholder names the field (`출발지`, `이메일`),
-    it is not an example (`예: 서울`). It also needs body-text contrast (4.5:1); the browser's
-    default grey is too faint for text that does a label's job. Keep an accessible name, because a
-    placeholder is not a reliable one: `aria-label`, or a `<label>` that is hidden visually.
+    `받는 사람` that ends up showing `김하늘`. The placeholder names the field (`받는 사람`,
+    `이메일`), it is not an example (`예: 홍길동`). It also needs body-text contrast (4.5:1); the
+    browser's default grey is too faint for text that does a label's job. Keep an accessible name,
+    because a placeholder is not a reliable one: `aria-label`, or a `<label>` that is hidden
+    visually.
   - **Leading icon**, so the field still says what it is after the placeholder is gone: a calendar
-    icon on the left of a date field, a person on a passenger field, a magnifier on a search box.
+    icon on the left of a date field, a person on a name field, a magnifier on a search box.
     The icon is decoration (`aria-hidden="true"`), so the field keeps its `aria-label`. It needs
     3:1 contrast against the fill, since it carries meaning. Within one group of fields, give every
     field an icon or none, so the values start on one column.
   - **Floating label**, when the value alone would be ambiguous once the placeholder is gone: two
-    date fields side by side, a number, a code. The label sits in the field like a placeholder and
-    moves up, at the small size, as soon as the field has focus or a value.
+    fields of the same kind side by side (a start and an end time), a number, a code. The label
+    sits in the field like a placeholder and moves up, at the small size, as soon as the field has
+    focus or a value.
   - **Label above**, for long forms and for fields whose rules the reader needs while typing.
 
   ```css
@@ -468,14 +470,14 @@ Without a border, these carry the job instead:
                      clip-path: inset(50%); white-space: nowrap; }
 
   /* Leading icon: <div class="with-icon"><svg aria-hidden="true">…</svg>
-                                           <input class="field" aria-label="가는 날" placeholder="가는 날"></div> */
+                                           <input class="field" aria-label="공연일" placeholder="공연일"></div> */
   .with-icon { position: relative; }
   .with-icon svg { position: absolute; left: 14px; top: 50%; translate: 0 -50%; width: 20px; height: 20px;
                    color: var(--muted); pointer-events: none; }
   .with-icon .field { padding-left: 44px; }
 
-  /* Floating label: <div class="float"><input class="field" id="dep" placeholder=" ">
-                                        <label for="dep">가는 날</label></div> */
+  /* Floating label: <div class="float"><input class="field" id="date" placeholder=" ">
+                                        <label for="date">공연일</label></div> */
   .float { position: relative; }
   .float label { position: absolute; left: 14px; top: 50%; translate: 0 -50%; line-height: 1.2;
                  color: var(--muted); pointer-events: none;
@@ -494,14 +496,14 @@ Without a border, these carry the job instead:
 Use one treatment per page: either every control is filled, or every control is framed.
 
 **Tables: never add one for its own sake.** A page does not need a table. Do not create a section so
-that a table has something to show, such as a fare-type comparison or a route price grid nobody
-asked for. Use one only when content the page must carry anyway is values compared across rows and
+that a table has something to show, such as a plan comparison or a spec grid nobody asked
+for. Use one only when content the page must carry anyway is values compared across rows and
 columns, and reading it any other way would be harder. One record's details, a list of items or a
 set of label and value pairs is not a comparison: use a heading with a list, or a definition list
 (`dl`). When in doubt, leave the table out.
 
 **Close wide gaps with columns, not filler.** When a row is wide and its content sits at the two ends
-(an airline at the left, a price at the right), the eye loses the row on the way across. That is a
+(a product name at the left, a price at the right), the eye loses the row on the way across. That is a
 layout problem. Size the columns to their content so related items sit next to each other, put the
 leftover space in one place (the end of the row), or cap the row's width:
 
@@ -513,8 +515,8 @@ Do not fill the gap with a line, a progress bar, an illustration or repeated tex
 row busier without bringing the information any closer.
 
 **Horizontal scrollers start on the gutter and stop on an item.** A strip of chips or cards that
-scrolls sideways (a date strip, a row of filters) must not cut an item inside the text column, and
-must not come to rest halfway through a label.
+scrolls sideways (a row of filter chips, a strip of categories) must not cut an item inside the text
+column, and must not come to rest halfway through a label.
 
 - The first item starts on the page gutter, like the text above it. On a full-bleed strip, pull the
   strip out to the screen edge and push its content back in by the gutter.
@@ -561,19 +563,19 @@ needs no hang.
   emphasized value and the action cue.
 - **No description paragraph.** A card is not where an item is explained; the page it opens is.
   Key facts (origin, dates, duration) fit in one line of small text.
-- **Each fact once.** What the badge says (`국제선 · 왕복`) is not repeated in the key facts or next to
-  the price. The price reads `270,500원부터`, not `왕복 270,500원부터`.
+- **Each fact once.** What the badge says (`무료 배송`) is not repeated in the key facts or next to
+  the price. The price reads `39,000원`, not `39,000원 · 무료 배송`.
 - **One inset, one column.** The card's inner padding is one token on every side. Every line of
   text starts at the same column inside it, with the badge hung by half its padding (above).
 - **Image at a fixed ratio.** Cards of one kind share one `aspect-ratio`. The image's top corners
   follow the card's radius.
 - **Emphasize the value by size, not by extra words.** The figure the reader compares (a price, a
-  fare) takes the heading token one step above the card title (title `h4`, price `h3`), and stays
+  rating) takes the heading token one step above the card title (title `h4`, price `h3`), and stays
   below the heading of the section that holds the cards. Set it bold, with
-  `tabular-nums`. Its unit and qualifier (`원부터`, `/박`) stay at small, aligned on the same
+  `tabular-nums`. Its unit and qualifier (`원`, `원부터`, `/월`) stay at small, aligned on the same
   baseline, so the number is what stands out.
 - **The action is a cue, not a button.** The whole card is the link, so the last line says where it
-  goes (`이 노선 검색 →`) in text. No button inside.
+  goes (`자세히 보기 →`) in text. No button inside.
 
 **Cards side by side line up.** In a row of cards, the same element sits at the same height in every
 card, however long the content above it. Make the cards equal height, keep the badge row's space
@@ -603,7 +605,7 @@ The page has exactly eight sizes, defined once as tokens:
 | small | The small text listed in section 7: captions, labels, helper and error text, badges, footnotes, footer legal text. One size, inside the floor range chosen there |
 
 - Headings take `h1`–`h6`, everything else takes body or small. No text gets a size of its own.
-- **One exception: an emphasized figure.** The value an item is compared by (a price, a fare, a
+- **One exception: an emphasized figure.** The value an item is compared by (a price, a rating, a
   count) may take the heading token one step above the item's title. It is still a token, and the
   unit beside it stays small.
   - **It stays below the section heading.** The figure must be smaller than the heading of the
@@ -612,7 +614,7 @@ The page has exactly eight sizes, defined once as tokens:
     `h3`) instead of raising the figure to the section's size.
   - **An empty value is not emphasized.** Before anything is chosen there is no figure to compare,
     so do not show `0원` or `—` at the emphasized size. Show a short prompt at body or small
-    (`가는 편을 골라 주세요`), and give the size back when a real value arrives.
+    (`옵션을 골라 주세요`), and give the size back when a real value arrives.
 - Pick the tier by the content's depth in the page, not by how big it should look. The page title is
   `h1`, its sections `h2`, their subsections `h3`, and so on. Do not skip a tier when a level in
   between exists.
@@ -718,7 +720,7 @@ console.table(past.map(el => ({
 })));
 ```
 
-Pass when the table is empty. Content inside a deliberate horizontal scroller (a date strip, a wide
+Pass when the table is empty. Content inside a deliberate horizontal scroller (a chip strip, a wide
 table wrapper) is skipped. For anything listed, give grid tracks `minmax(0, 1fr)` and give flex and
 grid children and the controls themselves `min-width: 0`. The script only catches what crosses the
 screen edge. Also look at the 375px screenshot and check that every control and text block ends at
