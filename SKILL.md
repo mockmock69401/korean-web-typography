@@ -512,6 +512,29 @@ leftover space in one place (the end of the row), or cap the row's width:
 Do not fill the gap with a line, a progress bar, an illustration or repeated text. That makes the
 row busier without bringing the information any closer.
 
+**Horizontal scrollers start on the gutter and stop on an item.** A strip of chips or cards that
+scrolls sideways (a date strip, a row of filters) must not cut an item inside the text column, and
+must not come to rest halfway through a label.
+
+- The first item starts on the page gutter, like the text above it. On a full-bleed strip, pull the
+  strip out to the screen edge and push its content back in by the gutter.
+- Scrolling snaps to item starts, so the strip always rests with an item's left edge on the gutter.
+- To bring the selected item into view, scroll it to the start, not to the centre. Centring is what
+  leaves half an item at the left edge.
+- Partial items appear only outside the text column: a sliver of the previous item in the left
+  gutter and part of the next item at the far edge. Those are the cues that the strip scrolls.
+
+```css
+.strip { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory;
+         margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter);
+         scroll-padding-inline: var(--gutter); }
+.strip > * { flex: none; scroll-snap-align: start; }
+```
+
+```js
+selected.scrollIntoView({ inline: 'start', block: 'nearest' });
+```
+
 **Badges: hang the box by half its padding.** A badge's padding and rounded corners push its text in
 from its box. When a badge starts a line above or beside left-aligned text (a tag over a title, a
 label at the start of a row), neither edge should sit exactly on the column:
@@ -545,7 +568,8 @@ needs no hang.
 - **Image at a fixed ratio.** Cards of one kind share one `aspect-ratio`. The image's top corners
   follow the card's radius.
 - **Emphasize the value by size, not by extra words.** The figure the reader compares (a price, a
-  fare) takes the heading token one step above the card title (title `h4`, price `h3`), bold, with
+  fare) takes the heading token one step above the card title (title `h4`, price `h3`), and stays
+  below the heading of the section that holds the cards. Set it bold, with
   `tabular-nums`. Its unit and qualifier (`원부터`, `/박`) stay at small, aligned on the same
   baseline, so the number is what stands out.
 - **The action is a cue, not a button.** The whole card is the link, so the last line says where it
@@ -582,6 +606,13 @@ The page has exactly eight sizes, defined once as tokens:
 - **One exception: an emphasized figure.** The value an item is compared by (a price, a fare, a
   count) may take the heading token one step above the item's title. It is still a token, and the
   unit beside it stays small.
+  - **It stays below the section heading.** The figure must be smaller than the heading of the
+    section that holds the items. If one step above the item title reaches the section heading's
+    size (section `h2`, item `h3`, figure would be `h2`), lower the item title a tier (`h4`, figure
+    `h3`) instead of raising the figure to the section's size.
+  - **An empty value is not emphasized.** Before anything is chosen there is no figure to compare,
+    so do not show `0원` or `—` at the emphasized size. Show a short prompt at body or small
+    (`가는 편을 골라 주세요`), and give the size back when a real value arrives.
 - Pick the tier by the content's depth in the page, not by how big it should look. The page title is
   `h1`, its sections `h2`, their subsections `h3`, and so on. Do not skip a tier when a level in
   between exists.
@@ -726,6 +757,8 @@ the page gutter, not past it.
       description paragraph; no fact repeated; one inner padding and one text column
 - [ ] Card value emphasized one heading token above the title, unit at small, `tabular-nums`; the
       action shown as a text cue, not a button
+- [ ] Emphasized figures smaller than the heading of their section; empty values (`0원`, nothing
+      chosen yet) shown as a prompt, not at the emphasized size
 - [ ] Cards side by side: equal height, badge row reserved, value row pinned to the bottom, so
       titles and prices line up across the row
 - [ ] No table unless content the page must carry is a comparison across rows and columns; no
@@ -738,6 +771,8 @@ the page gutter, not past it.
       on a date field) so the field type stays visible, floating label where the value alone is
       ambiguous, label above for long forms; icons on all fields of a group or none
 - [ ] Wide rows closed up by column widths, not filled with lines, bars or illustrations
+- [ ] Horizontal scrollers start on the gutter, snap to item starts, bring the selected item to the
+      start; no item cut inside the text column
 - [ ] Badges that start a line hang out by about half their horizontal padding: box slightly outside
       the column, text slightly inside
 - [ ] Exactly eight size tokens (h1–h6, body, small); headings by hierarchy depth, other text body
