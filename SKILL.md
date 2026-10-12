@@ -393,38 +393,51 @@ the user saying the audience is older readers or that text should be large. If y
 (running as a subagent, or non-interactive with no answer given), use 14–16px and say so in your
 report.
 
-## 8. Structure by hierarchy: boxes, cards, tables, columns and type sizes
+## 8. Structure by hierarchy: boxes, tables, columns and type sizes
 
 Boxes and tables are the two things most often added for looks. A box around every group and a grid
 around every list flatten the page: everything gets the same visual weight, and the heading
 hierarchy readers scan by is lost. Neither is a default. The page is laid out by order, spacing,
 headings, lists and dividers, and a box or a table is the exception that has to earn its place.
 
-**Box only what is pressed.** A border, shadow or fill around a group marks a button, not a group of
-content.
+**Box media, controls and buttons, not content.** A box here is any surface with a fill, a border
+or a shadow and rounded corners: the "card" look. Recommend it only for three things:
 
-- An item that carries information and its own action button (a product row with `담기`, a course
-  row with `수강 신청`) is not boxed. Lay its content out by hierarchy, separate items with
-  spacing or a divider, and make only the action a button.
-- A box around a whole item is allowed in two cases, and in both the box is the one thing pressed:
-  - **A small button** whose content is just its label: a size chip with its stock, a delivery
-    option toggle, a filter chip.
-  - **A card**: the whole item is one link or button that opens or chooses it (a product that opens
-    its page, a concert that opens its seat map). What goes inside and how it is arranged is a
-    design decision, not a fixed template; just say each fact once (what a badge says is not
-    repeated next to the price).
+- **Media:** an image, a video, a map, an illustration. Rounded, filled or framed, it reads as one
+  object.
+- **Input components:** fields, selects, toggles, chips (see the controls rule below).
+- **Buttons:** including small buttons whose content is just their label, such as a size chip with
+  its stock or a filter chip.
 
-  Build either as one `<button>` or `<a>` with hover, focus and pressed states, and put no other link
-  or button inside it. HTML does not allow interactive content inside `<a>` or `<button>`, and a
-  second target makes it unclear what a click does. An item that needs two actions is not a card.
-- Content that is not pressed (a search form, a feature list, a guide, a set of facts) gets no box.
-  Show it as a heading, the content under it, and spacing or a divider between groups.
+Content gets no box:
+
+- **An item that is one link** (a product that opens its page, a listing, a search result) is not
+  a card. Box its media, and set its title, facts and value under or beside the media on the page
+  surface. The whole item can still be one `<a>`: show hover on the media (a slight shade or
+  zoom) or by underlining the title, and put no other link or button inside it. HTML does not
+  allow interactive content inside `<a>`, and a second target makes it unclear what a click does.
+- **An item with its own action button** (a product row with `담기`, a course row with `수강 신청`)
+  is laid out by hierarchy, separated from the next by spacing or a divider, with only the action
+  as a button.
+- **Everything else** (a search form, a feature list, a guide, a set of facts) is a heading, the
+  content under it, and spacing or a divider between groups.
+- Within an item, say each fact once: what a badge says is not repeated next to the price.
 - No box inside a box, and no table inside a box.
 
-**Controls: a fill is enough, a frame is optional.** Inputs, selects and buttons are often drawn as
-small cards: a white box with a border, a radius and sometimes a shadow. That is not required. A
-control can be a plain fill with no border at all, which is quieter and keeps the page from turning
-into a grid of boxes.
+**Items side by side line up.** In a row or grid of items, boxed or not, the same element sits at
+the same height in every item, however long the content above it.
+
+- An element only some items have (a badge, a sale tag) must not push the rest down. Keep its
+  line in every item, or place it where it takes no line of its own (over the media, beside the
+  title).
+- When the last line carries the value (a price, a date), give the items equal height and pin that
+  line to the bottom, so values line up even when titles wrap differently.
+- Check it by looking: in each row, titles start on one line and values sit on one line.
+
+**Controls: a fill is enough, a frame is optional.** Controls are where a box belongs, but the box
+does not need the full card look of a white surface with a border, a radius and a shadow. A control
+can be a plain fill with no border at all, which is quieter and keeps the page from turning into a
+grid of frames.
 
 ```css
 .field {                                   /* input, select, textarea */
@@ -516,7 +529,7 @@ leftover space in one place (the end of the row), or cap the row's width:
 Do not fill the gap with a line, a progress bar, an illustration or repeated text. That makes the
 row busier without bringing the information any closer.
 
-**Horizontal scrollers start on the gutter and stop on an item.** A strip of chips or cards that
+**Horizontal scrollers start on the gutter and stop on an item.** A strip of chips or items that
 scrolls sideways (a row of filter chips, a strip of categories) must not cut an item inside the text
 column, and must not come to rest halfway through a label.
 
@@ -619,8 +632,8 @@ Tailwind: `no-underline hover:underline focus-visible:underline underline-offset
 - **Offset the underline from Hangul.** Browsers usually do not skip ink for CJK, so an underline
   at the default position touches the bottom strokes of Hangul syllables (`ㅡ`, `ㅗ` and 받침).
   Start from `text-underline-offset: 0.2em`, then look at the rendered link and adjust.
-- **Scope.** This covers text links: inline links in body text, navigation, footer links. A boxed
-  button (section 8) or a link styled as a button is not a text link. It shows hover with its own state,
+- **Scope.** This covers text links: inline links in body text, navigation, footer links. A button,
+  a link styled as a button, or an item link built around media (section 8) is not a text link. It shows hover with its own state,
   such as background or border, and does not underline its contents.
 
 ## 10. Verify the rendered page before reporting
@@ -717,15 +730,16 @@ the page gutter, not past it.
       may use one for emphasis); ranges written with `~`
 - [ ] Displayed dates in Korean notation (`2026년 10월 16일(금)`, `10월 16일(금)`), formatted by a
       helper; native date inputs not showing the browser's own format
-- [ ] Boxes only around what is pressed: items with their own action button are laid out unboxed
-      with only the action as a button; whole-item boxes only for small buttons and for cards that
-      are one link with nothing pressable inside
+- [ ] Box treatment only on media, input components and buttons; content items (even one-link
+      items) unboxed, with the media boxed and the text on the page surface; each fact said once
+- [ ] Items side by side line up: optional badges take no extra line or keep it everywhere, value
+      line pinned to the bottom, titles and values level across each row
 - [ ] Emphasized figures one heading token above their item title, unit at small, `tabular-nums`
 - [ ] Emphasized figures smaller than the heading of their section; empty values (`0원`, nothing
       chosen yet) shown as a prompt, not at the emphasized size
 - [ ] No table unless content the page must carry is a comparison across rows and columns; no
       section created to hold a table
-- [ ] Inputs, selects and buttons not drawn as cards by default; a borderless fill is fine when it
+- [ ] Inputs, selects and buttons boxed, where a borderless fill counts as the box when it
       reads as a field on its surface, with a `:focus-visible` ring, an error line and a custom
       `select` arrow; one treatment for all controls on the page
 - [ ] Field labels chosen per field: placeholder as label where the typed value explains itself
