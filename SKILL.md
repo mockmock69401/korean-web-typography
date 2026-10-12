@@ -1,6 +1,6 @@
 ---
 name: korean-web-typography
-description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, em and en dashes and Korean date notation, when to box content, card layout, borderless filled controls, when to use tables, column layout and badge alignment, the h1-h6, body and small size tokens, hover-only link underlines with a link-only color, and a right-edge overflow check at 375px. Applies to every web project, not one codebase.
+description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, em and en dashes and Korean date notation, when to box content, borderless filled controls, when to use tables, column layout and badge alignment, the h1-h6, body and small size tokens, hover-only link underlines with a link-only color, and a right-edge overflow check at 375px. Applies to every web project, not one codebase.
 ---
 
 # Korean web typography
@@ -410,7 +410,9 @@ content.
   - **A small button** whose content is just its label: a size chip with its stock, a delivery
     option toggle, a filter chip.
   - **A card**: the whole item is one link or button that opens or chooses it (a product that opens
-    its page, a concert that opens its seat map). It follows the card layout below.
+    its page, a concert that opens its seat map). What goes inside and how it is arranged is a
+    design decision, not a fixed template; just say each fact once (what a badge says is not
+    repeated next to the price).
 
   Build either as one `<button>` or `<a>` with hover, focus and pressed states, and put no other link
   or button inside it. HTML does not allow interactive content inside `<a>` or `<button>`, and a
@@ -556,43 +558,6 @@ one group:
 Tailwind: `px-2.5 -ml-[5px]`. Check that the container has that much room on the left, or the
 hanging box is clipped. If it does not, drop the fill and show the label as small bold text, which
 needs no hang.
-
-**Card layout.** A card exists so the reader can choose it. It carries only what that choice needs.
-
-- **Order, top to bottom:** image (optional), badge, title, one line of key facts, then the
-  emphasized value and the action cue.
-- **No description paragraph.** A card is not where an item is explained; the page it opens is.
-  Key facts (origin, dates, duration) fit in one line of small text.
-- **Each fact once.** What the badge says (`무료 배송`) is not repeated in the key facts or next to
-  the price. The price reads `39,000원`, not `39,000원 · 무료 배송`.
-- **One inset, one column.** The card's inner padding is one token on every side. Every line of
-  text starts at the same column inside it, with the badge hung by half its padding (above).
-- **Image at a fixed ratio.** Cards of one kind share one `aspect-ratio`. The image's top corners
-  follow the card's radius.
-- **Emphasize the value by size, not by extra words.** The figure the reader compares (a price, a
-  rating) takes the heading token one step above the card title (title `h4`, price `h3`), and stays
-  below the heading of the section that holds the cards. Set it bold, with
-  `tabular-nums`. Its unit and qualifier (`원`, `원부터`, `/월`) stay at small, aligned on the same
-  baseline, so the number is what stands out.
-- **The action is a cue, not a button.** The whole card is the link, so the last line says where it
-  goes (`자세히 보기 →`) in text. No button inside.
-
-**Cards side by side line up.** In a row of cards, the same element sits at the same height in every
-card, however long the content above it. Make the cards equal height, keep the badge row's space
-even when a card has no badge, and pin the value row to the bottom:
-
-```css
-.cards      { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
-.card       { display: flex; flex-direction: column; border-radius: 16px; overflow: hidden; }
-.card-media { aspect-ratio: 16 / 10; }
-.card-body  { display: flex; flex-direction: column; flex: 1; padding: 20px; }
-.card-badges { min-height: 26px; }   /* kept when a card has no badge, so titles start level */
-.card-foot  { margin-top: auto; display: flex; align-items: baseline; justify-content: space-between; }
-.card-price b     { font-size: var(--h3); font-weight: 800; font-variant-numeric: tabular-nums; }
-.card-price small { font-size: var(--small); }
-```
-
-Check it by looking: in each row of cards, titles start on one line and prices sit on one line.
 
 **Type sizes: h1–h6, body and small. Nothing else.**
 
@@ -755,14 +720,9 @@ the page gutter, not past it.
 - [ ] Boxes only around what is pressed: items with their own action button are laid out unboxed
       with only the action as a button; whole-item boxes only for small buttons and for cards that
       are one link with nothing pressable inside
-- [ ] Cards: image at one ratio, badge, title, one line of key facts, value and action cue; no
-      description paragraph; no fact repeated; one inner padding and one text column
-- [ ] Card value emphasized one heading token above the title, unit at small, `tabular-nums`; the
-      action shown as a text cue, not a button
+- [ ] Emphasized figures one heading token above their item title, unit at small, `tabular-nums`
 - [ ] Emphasized figures smaller than the heading of their section; empty values (`0원`, nothing
       chosen yet) shown as a prompt, not at the emphasized size
-- [ ] Cards side by side: equal height, badge row reserved, value row pinned to the bottom, so
-      titles and prices line up across the row
 - [ ] No table unless content the page must carry is a comparison across rows and columns; no
       section created to hold a table
 - [ ] Inputs, selects and buttons not drawn as cards by default; a borderless fill is fine when it
