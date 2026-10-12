@@ -429,6 +429,7 @@ into a grid of boxes.
   background: var(--fill);                 /* clearly darker than the surface it sits on */
   border: 0; border-radius: 10px; padding: 12px 14px;
   box-sizing: border-box; width: 100%; min-width: 0;   /* padding stays inside the grid cell */
+  min-height: 52px;                        /* one height for every field, floating label or not */
 }
 .field:hover         { background: var(--fill-hover); }
 .field:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -444,7 +445,45 @@ Without a border, these carry the job instead:
 - **The fill reads as a field.** Pick it against the surface it sits on, not against white: on a
   tinted band, a white fill does what a grey one does on a white page. If the fill is too faint to
   see, add the border back rather than leave a field that looks like empty space.
-- **The label stays visible** above the field. A placeholder alone disappears on the first keystroke.
+- **The field keeps a name, but the label can move.** A visible label above the field is one option,
+  not a requirement. Where the design reads cleaner without it, let the placeholder carry the label:
+  - **Placeholder as label**, when the typed value explains itself: a search box, an email field,
+    `출발지` that ends up showing `서울/김포`. The placeholder names the field (`출발지`, `이메일`),
+    it is not an example (`예: 서울`). It also needs body-text contrast (4.5:1); the browser's
+    default grey is too faint for text that does a label's job. Keep an accessible name, because a
+    placeholder is not a reliable one: `aria-label`, or a `<label>` that is hidden visually.
+  - **Leading icon**, so the field still says what it is after the placeholder is gone: a calendar
+    icon on the left of a date field, a person on a passenger field, a magnifier on a search box.
+    The icon is decoration (`aria-hidden="true"`), so the field keeps its `aria-label`. It needs
+    3:1 contrast against the fill, since it carries meaning. Within one group of fields, give every
+    field an icon or none, so the values start on one column.
+  - **Floating label**, when the value alone would be ambiguous once the placeholder is gone: two
+    date fields side by side, a number, a code. The label sits in the field like a placeholder and
+    moves up, at the small size, as soon as the field has focus or a value.
+  - **Label above**, for long forms and for fields whose rules the reader needs while typing.
+
+  ```css
+  .field::placeholder { color: var(--muted); opacity: 1; }   /* 4.5:1 against the fill */
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden;
+                     clip-path: inset(50%); white-space: nowrap; }
+
+  /* Leading icon: <div class="with-icon"><svg aria-hidden="true">…</svg>
+                                           <input class="field" aria-label="가는 날" placeholder="가는 날"></div> */
+  .with-icon { position: relative; }
+  .with-icon svg { position: absolute; left: 14px; top: 50%; translate: 0 -50%; width: 20px; height: 20px;
+                   color: var(--muted); pointer-events: none; }
+  .with-icon .field { padding-left: 44px; }
+
+  /* Floating label: <div class="float"><input class="field" id="dep" placeholder=" ">
+                                        <label for="dep">가는 날</label></div> */
+  .float { position: relative; }
+  .float label { position: absolute; left: 14px; top: 50%; translate: 0 -50%; line-height: 1.2;
+                 color: var(--muted); pointer-events: none;
+                 transition: top .15s, translate .15s, font-size .15s; }
+  .float .field { padding-top: 24px; padding-bottom: 6px; }
+  .float .field:focus + label,
+  .float .field:not(:placeholder-shown) + label { top: 7px; translate: 0 0; font-size: var(--small); }
+  ```
 - **Focus is drawn, not implied.** With no border to darken, keyboard focus needs its own ring
   (`:focus-visible` outline) with at least 3:1 contrast against the surface.
 - **Error is more than a color change of the fill.** Add a 1.5px inset line in the error color and
@@ -692,8 +731,12 @@ the page gutter, not past it.
 - [ ] No table unless content the page must carry is a comparison across rows and columns; no
       section created to hold a table
 - [ ] Inputs, selects and buttons not drawn as cards by default; a borderless fill is fine when it
-      reads as a field on its surface, with a visible label, a `:focus-visible` ring, an error line
-      and a custom `select` arrow; one treatment for all controls on the page
+      reads as a field on its surface, with a `:focus-visible` ring, an error line and a custom
+      `select` arrow; one treatment for all controls on the page
+- [ ] Field labels chosen per field: placeholder as label where the typed value explains itself
+      (placeholder names the field, 4.5:1 contrast, accessible name kept), a leading icon (calendar
+      on a date field) so the field type stays visible, floating label where the value alone is
+      ambiguous, label above for long forms; icons on all fields of a group or none
 - [ ] Wide rows closed up by column widths, not filled with lines, bars or illustrations
 - [ ] Badges that start a line hang out by about half their horizontal padding: box slightly outside
       the column, text slightly inside
