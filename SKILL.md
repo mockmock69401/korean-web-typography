@@ -1,6 +1,6 @@
 ---
 name: korean-web-typography
-description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, em and en dashes and Korean date notation, when to box content and when to use tables, column layout and badge alignment, the h1-h6, body and small size tokens, hover-only link underlines with a link-only color, and a right-edge overflow check at 375px. Applies to every web project, not one codebase.
+description: Use when building or restyling any web UI that displays Korean text, or writing Korean copy for one - including when another design skill also sets fonts or a type scale. Covers the font stack, font sizes and small-text floors, heading line height, monospace, word-break keep-all, line spacing, em and en dashes and Korean date notation, when to box content, card layout, when to use tables, column layout and badge alignment, the h1-h6, body and small size tokens, hover-only link underlines with a link-only color, and a right-edge overflow check at 375px. Applies to every web project, not one codebase.
 ---
 
 # Korean web typography
@@ -393,7 +393,7 @@ the user saying the audience is older readers or that text should be large. If y
 (running as a subagent, or non-interactive with no answer given), use 14–16px and say so in your
 report.
 
-## 8. Structure by hierarchy: boxes, tables, columns and type sizes
+## 8. Structure by hierarchy: boxes, cards, tables, columns and type sizes
 
 Boxes and tables are the two things most often added for looks. A box around every group and a grid
 around every list flatten the page: everything gets the same visual weight, and the heading
@@ -403,14 +403,18 @@ headings, lists and dividers, and a box or a table is the exception that has to 
 **Box only what is pressed.** A border, shadow or fill around a group marks a button, not a group of
 content.
 
-- An item that carries information and an action (a flight result, a deal, a product in a list) is
-  not boxed. Lay its content out by hierarchy, separate items with spacing or a divider, and make
-  only the action a button (`선택하기`, `이 노선 검색`).
-- A box around a whole item is allowed only when the item is one small button whose content is just
-  its label: a date chip with its fare, a seat-class option, a trip-type toggle. Build it as one
-  `<button>` or `<a>` with hover, focus and pressed states, and put no other link or button inside
-  it. HTML does not allow interactive content inside `<a>` or `<button>`, and a second target makes
-  it unclear what a click does.
+- An item that carries information and its own action button (a flight result with `선택하기`, a
+  product row with `담기`) is not boxed. Lay its content out by hierarchy, separate items with
+  spacing or a divider, and make only the action a button.
+- A box around a whole item is allowed in two cases, and in both the box is the one thing pressed:
+  - **A small button** whose content is just its label: a date chip with its fare, a seat-class
+    option, a trip-type toggle.
+  - **A card**: the whole item is one link or button that opens or chooses it (a deal that starts a
+    search, a destination that opens its page). It follows the card layout below.
+
+  Build either as one `<button>` or `<a>` with hover, focus and pressed states, and put no other link
+  or button inside it. HTML does not allow interactive content inside `<a>` or `<button>`, and a
+  second target makes it unclear what a click does. An item that needs two actions is not a card.
 - Content that is not pressed (a search form, a feature list, a guide, a set of facts) gets no box.
   Show it as a heading, the content under it, and spacing or a divider between groups.
 - No box inside a box, and no table inside a box.
@@ -454,6 +458,42 @@ Tailwind: `px-2.5 -ml-[5px]`. Check that the container has that much room on the
 hanging box is clipped. If it does not, drop the fill and show the label as small bold text, which
 needs no hang.
 
+**Card layout.** A card exists so the reader can choose it. It carries only what that choice needs.
+
+- **Order, top to bottom:** image (optional), badge, title, one line of key facts, then the
+  emphasized value and the action cue.
+- **No description paragraph.** A card is not where an item is explained; the page it opens is.
+  Key facts (origin, dates, duration) fit in one line of small text.
+- **Each fact once.** What the badge says (`국제선 · 왕복`) is not repeated in the key facts or next to
+  the price. The price reads `270,500원부터`, not `왕복 270,500원부터`.
+- **One inset, one column.** The card's inner padding is one token on every side. Every line of
+  text starts at the same column inside it, with the badge hung by half its padding (above).
+- **Image at a fixed ratio.** Cards of one kind share one `aspect-ratio`. The image's top corners
+  follow the card's radius.
+- **Emphasize the value by size, not by extra words.** The figure the reader compares (a price, a
+  fare) takes the heading token one step above the card title (title `h4`, price `h3`), bold, with
+  `tabular-nums`. Its unit and qualifier (`원부터`, `/박`) stay at small, aligned on the same
+  baseline, so the number is what stands out.
+- **The action is a cue, not a button.** The whole card is the link, so the last line says where it
+  goes (`이 노선 검색 →`) in text. No button inside.
+
+**Cards side by side line up.** In a row of cards, the same element sits at the same height in every
+card, however long the content above it. Make the cards equal height, keep the badge row's space
+even when a card has no badge, and pin the value row to the bottom:
+
+```css
+.cards      { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.card       { display: flex; flex-direction: column; border-radius: 16px; overflow: hidden; }
+.card-media { aspect-ratio: 16 / 10; }
+.card-body  { display: flex; flex-direction: column; flex: 1; padding: 20px; }
+.card-badges { min-height: 26px; }   /* kept when a card has no badge, so titles start level */
+.card-foot  { margin-top: auto; display: flex; align-items: baseline; justify-content: space-between; }
+.card-price b     { font-size: var(--h3); font-weight: 800; font-variant-numeric: tabular-nums; }
+.card-price small { font-size: var(--small); }
+```
+
+Check it by looking: in each row of cards, titles start on one line and prices sit on one line.
+
 **Type sizes: h1–h6, body and small. Nothing else.**
 
 The page has exactly eight sizes, defined once as tokens:
@@ -465,6 +505,9 @@ The page has exactly eight sizes, defined once as tokens:
 | small | The small text listed in section 7: captions, labels, helper and error text, badges, footnotes, footer legal text. One size, inside the floor range chosen there |
 
 - Headings take `h1`–`h6`, everything else takes body or small. No text gets a size of its own.
+- **One exception: an emphasized figure.** The value an item is compared by (a price, a fare, a
+  count) may take the heading token one step above the item's title. It is still a token, and the
+  unit beside it stays small.
 - Pick the tier by the content's depth in the page, not by how big it should look. The page title is
   `h1`, its sections `h2`, their subsections `h3`, and so on. Do not skip a tier when a level in
   between exists.
@@ -602,8 +645,15 @@ the page gutter, not past it.
       may use one for emphasis); ranges written with `~`
 - [ ] Displayed dates in Korean notation (`2026년 10월 16일(금)`, `10월 16일(금)`), formatted by a
       helper; native date inputs not showing the browser's own format
-- [ ] Boxes only around what is pressed: items with an action are laid out unboxed with only the
-      action as a button; whole-item boxes only for small buttons such as date chips
+- [ ] Boxes only around what is pressed: items with their own action button are laid out unboxed
+      with only the action as a button; whole-item boxes only for small buttons and for cards that
+      are one link with nothing pressable inside
+- [ ] Cards: image at one ratio, badge, title, one line of key facts, value and action cue; no
+      description paragraph; no fact repeated; one inner padding and one text column
+- [ ] Card value emphasized one heading token above the title, unit at small, `tabular-nums`; the
+      action shown as a text cue, not a button
+- [ ] Cards side by side: equal height, badge row reserved, value row pinned to the bottom, so
+      titles and prices line up across the row
 - [ ] No table unless content the page must carry is a comparison across rows and columns; no
       section created to hold a table
 - [ ] Wide rows closed up by column widths, not filled with lines, bars or illustrations
